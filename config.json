@@ -4,12 +4,12 @@
   "version": "1.0.0",
   "items": [
     {
-      "url": "https://rthomas91740-hash.github.io/driver-dashboard-addin/index.html",
+      "url": "https://rthomas91740-hash.github.io/Driver-Hub-//index.html",
       "path": "ActivityLink/",
       "menuName": {
         "en": "Driver Dashboard"
       },
-      "icon": "https://rthomas91740-hash.github.io/driver-dashboard-addin/icon.svg"
+      "icon": "https://rthomas91740-hash.github.io/Driver-Hub-/icon.svg"
     }
   ],
   "isSigned": false
