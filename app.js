@@ -92,35 +92,55 @@ geotab.addin.driverDashboard = function () {
   let currentFuelGallons = 0;
 
   function loadFuel(deviceId, fromDate, toDate) {
+    // Geotab predefines a fixed diagnostic ID for fuel used, independent of
+    // whatever display name your database uses. Query StatusData with it
+    // directly instead of searching Diagnostic by name.
     api.call('Get', {
-      typeName: 'Diagnostic',
-      search: { name: 'Fuel Used' }
-    }, function (diagnostics) {
-      if (!diagnostics.length) {
-        el.fuel().textContent = 'n/a';
-        return;
+      typeName: 'StatusData',
+      search: {
+        deviceSearch: { id: deviceId },
+        diagnosticSearch: { id: 'DiagnosticFuelUsedId' },
+        fromDate,
+        toDate
       }
-      const diagnosticId = diagnostics[0].id;
-
-      api.call('Get', {
-        typeName: 'StatusData',
-        search: {
-          deviceSearch: { id: deviceId },
-          diagnosticSearch: { id: diagnosticId },
-          fromDate,
-          toDate
-        }
-      }, function (statusData) {
+    }, function (statusData) {
+      console.log('[FuelWolf] StatusData (DiagnosticFuelUsedId) rows:', statusData.length, statusData);
+      if (statusData.length) {
         const totalLiters = statusData.reduce((sum, s) => sum + (s.data || 0), 0);
         currentFuelGallons = totalLiters * 0.264172;
         el.fuel().textContent = currentFuelGallons.toFixed(1);
         updateCashCalc(currentTotalMiles, currentFuelGallons);
-      }, function (err) {
-        console.error('Get StatusData (fuel) failed', err);
-        el.fuel().textContent = 'err';
-      });
+      } else {
+        // Fallback: some devices/engine types populate fuel on the Trip
+        // record itself rather than as a separate StatusData stream.
+        console.log('[FuelWolf] No StatusData for DiagnosticFuelUsedId, trying Trip.fuelUsed fallback');
+        loadFuelFromTrips(deviceId, fromDate, toDate);
+      }
     }, function (err) {
-      console.error('Get Diagnostic failed', err);
+      console.error('Get StatusData (fuel) failed', err);
+      console.log('[FuelWolf] Falling back to Trip.fuelUsed after StatusData error');
+      loadFuelFromTrips(deviceId, fromDate, toDate);
+    });
+  }
+
+  function loadFuelFromTrips(deviceId, fromDate, toDate) {
+    api.call('Get', {
+      typeName: 'Trip',
+      search: { deviceSearch: { id: deviceId }, fromDate, toDate }
+    }, function (trips) {
+      console.log('[FuelWolf] Trip records for fuel fallback:', trips);
+      const totalLiters = trips.reduce((sum, t) => sum + (t.fuelUsed || 0), 0);
+      if (totalLiters > 0) {
+        currentFuelGallons = totalLiters * 0.264172;
+        el.fuel().textContent = currentFuelGallons.toFixed(1);
+        updateCashCalc(currentTotalMiles, currentFuelGallons);
+      } else {
+        el.fuel().textContent = 'n/a';
+        console.warn('[FuelWolf] No fuel data found via StatusData or Trip.fuelUsed for this device/range.');
+      }
+    }, function (err) {
+      console.error('Get Trip (fuel fallback) failed', err);
+      el.fuel().textContent = 'err';
     });
   }
 
