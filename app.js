@@ -17,6 +17,7 @@ geotab.addin.driverDashboard = function () {
     stops: () => document.getElementById('stopsValue'),
     mileage: () => document.getElementById('mileageValue'),
     fuel: () => document.getElementById('fuelValue'),
+    fuelOverride: () => document.getElementById('fuelOverrideInput'),
     hosDrive: () => document.getElementById('hosDriveValue'),
     hosDuty: () => document.getElementById('hosDutyValue'),
     rateInput: () => document.getElementById('rateInput'),
@@ -155,8 +156,8 @@ geotab.addin.driverDashboard = function () {
     api.call('Get', {
       typeName: 'DriverChange',
       search: { deviceSearch: { id: deviceId } },
-      resultsLimit: 1,
-      sort: { sortBy: 'dateTime', sortDirection: 'desc' }
+      resultsLimit: 50,
+      sort: { sortBy: 'date', sortDirection: 'desc' }
     }, function (changes) {
       if (!changes.length || !changes[0].driver) {
         el.hosDrive().textContent = 'n/a';
@@ -204,8 +205,11 @@ geotab.addin.driverDashboard = function () {
     const rate = parseFloat(el.rateInput().value) || 0;
     const fuelPrice = parseFloat(el.fuelPriceInput().value) || 0;
 
+    const overrideVal = parseFloat(el.fuelOverride().value);
+    const effectiveFuelGallons = !isNaN(overrideVal) ? overrideVal : (fuelGallons || 0);
+
     const grossPay = currentTotalMiles * rate;
-    const fuelCost = fuelGallons * fuelPrice;
+    const fuelCost = effectiveFuelGallons * fuelPrice;
     const net = grossPay - fuelCost;
 
     el.grossPay().textContent = `$${grossPay.toFixed(2)}`;
@@ -240,6 +244,7 @@ geotab.addin.driverDashboard = function () {
 
     el.rateInput().addEventListener('input', () => updateCashCalc());
     el.fuelPriceInput().addEventListener('input', () => updateCashCalc());
+    el.fuelOverride().addEventListener('input', () => updateCashCalc());
   }
 
   return {
