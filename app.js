@@ -168,7 +168,7 @@ geotab.addin.driverDashboard = function () {
 
       api.call('Get', {
         typeName: 'DutyStatusAvailability',
-        search: { driverSearch: { id: driverId } }
+        search: { userSearch: { id: driverId } }
       }, function (avail) {
         if (!avail.length) {
           el.hosDrive().textContent = 'n/a';
