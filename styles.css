@@ -89,6 +89,15 @@ header h1 {
   color: #999;
 }
 
+.overrideInput {
+  margin-top: 8px;
+  width: 100%;
+  padding: 4px 6px;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+  font-size: 12px;
+}
+
 #cashCalc {
   background: #fff;
   border-radius: 10px;
