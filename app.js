@@ -20,6 +20,8 @@ geotab.addin.driverDashboard = function () {
     fuelOverride: () => document.getElementById('fuelOverrideInput'),
     hosDrive: () => document.getElementById('hosDriveValue'),
     hosDuty: () => document.getElementById('hosDutyValue'),
+    hosCycle: () => document.getElementById('hosCycleValue'),
+    hosRuleset: () => document.getElementById('hosRulesetValue'),
     rateInput: () => document.getElementById('rateInput'),
     fuelPriceInput: () => document.getElementById('fuelPriceInput'),
     grossPay: () => document.getElementById('grossPayValue'),
@@ -162,10 +164,25 @@ geotab.addin.driverDashboard = function () {
       if (!changes.length || !changes[0].driver) {
         el.hosDrive().textContent = 'n/a';
         el.hosDuty().textContent = 'n/a';
+        el.hosCycle().textContent = 'n/a';
         return;
       }
       const driverId = changes[0].driver.id;
       console.log('[FuelWolf] DriverChange found — full driver object:', changes[0].driver, '| driverId:', driverId);
+
+      // The active cycle rule (e.g. 60hr/7-day vs 70hr/8-day) lives on the
+      // driver's User record, not on DutyStatusAvailability itself.
+      api.call('Get', {
+        typeName: 'User',
+        search: { id: driverId }
+      }, function (users) {
+        console.log('[FuelWolf] User record for ruleset lookup:', users);
+        const ruleSet = users.length ? users[0].hosRuleSet : null;
+        el.hosRuleset().textContent = humanizeRuleSet(ruleSet);
+      }, function (err) {
+        console.error('Get User (ruleset) failed', err);
+        el.hosRuleset().textContent = '';
+      });
 
       api.call('Get', {
         typeName: 'DutyStatusAvailability',
@@ -175,19 +192,37 @@ geotab.addin.driverDashboard = function () {
         if (!avail.length) {
           el.hosDrive().textContent = 'n/a';
           el.hosDuty().textContent = 'n/a';
+          el.hosCycle().textContent = 'n/a';
           return;
         }
         const a = avail[0];
         el.hosDrive().textContent = formatHMS(a.driving);
         el.hosDuty().textContent = formatHMS(a.workday);
+        el.hosCycle().textContent = formatHMS(a.cycle);
       }, function (err) {
         console.error('Get DutyStatusAvailability failed — full error:', JSON.stringify(err));
         el.hosDrive().textContent = 'err';
         el.hosDuty().textContent = 'err';
+        el.hosCycle().textContent = 'err';
       });
     }, function (err) {
       console.error('Get DriverChange failed', err);
     });
+  }
+
+  function humanizeRuleSet(ruleSet) {
+    // Geotab's User.hosRuleSet is an enum string. Common values mapped to
+    // shorthand labels — extend this list as new ones show up in the console.
+    const labels = {
+      USA60HourAny7Day: '60hr / 7-day',
+      USA70HourAny8Day: '70hr / 8-day',
+      CanadaSouthCycle1: 'Canada Cycle 1 (70hr/7-day)',
+      CanadaSouthCycle2: 'Canada Cycle 2 (120hr/14-day)',
+      CanadaNorthCycle1: 'Canada North Cycle 1',
+      CanadaNorthCycle2: 'Canada North Cycle 2'
+    };
+    if (!ruleSet) return '';
+    return labels[ruleSet] || ruleSet;
   }
 
   function formatHMS(hmsString) {
