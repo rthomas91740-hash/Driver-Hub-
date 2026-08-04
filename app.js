@@ -178,8 +178,8 @@ geotab.addin.driverDashboard = function () {
           return;
         }
         const a = avail[0];
-        el.hosDrive().textContent = formatDuration(a.driveRemaining);
-        el.hosDuty().textContent = formatDuration(a.dutyRemaining);
+        el.hosDrive().textContent = formatHMS(a.driving);
+        el.hosDuty().textContent = formatHMS(a.workday);
       }, function (err) {
         console.error('Get DutyStatusAvailability failed — full error:', JSON.stringify(err));
         el.hosDrive().textContent = 'err';
@@ -190,15 +190,13 @@ geotab.addin.driverDashboard = function () {
     });
   }
 
-  function formatDuration(isoDuration) {
-    // Geotab often returns HOS durations as ISO 8601 (e.g. "PT5H30M").
-    // Simple parse for hours/minutes display.
-    if (!isoDuration) return 'n/a';
-    const match = /PT(?:(\d+)H)?(?:(\d+)M)?/.exec(isoDuration);
-    if (!match) return isoDuration;
-    const h = match[1] || '0';
-    const m = match[2] || '0';
-    return `${h}h ${m}m`;
+  function formatHMS(hmsString) {
+    // Geotab's DutyStatusAvailability returns plain "HH:MM:SS" (sometimes
+    // with fractional seconds, e.g. "04:36:23.1560000") rather than ISO 8601.
+    if (!hmsString) return 'n/a';
+    const [h, m] = hmsString.split(':');
+    if (h === undefined || m === undefined) return hmsString;
+    return `${parseInt(h, 10)}h ${parseInt(m, 10)}m`;
   }
 
   // ---- Cash calculator ----
