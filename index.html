@@ -31,10 +31,9 @@
         <div class="cardUnit">miles</div>
       </div>
       <div class="card">
-        <div class="cardLabel">Fuel Used</div>
-        <div class="cardValue" id="fuelValue">--</div>
-        <div class="cardUnit">gallons</div>
-        <input type="number" id="fuelOverrideInput" class="overrideInput" placeholder="manual gal" step="0.1">
+        <div class="cardLabel">Work Week Left</div>
+        <div class="cardValue" id="hosCycleValue">--</div>
+        <div class="cardSub" id="hosRulesetValue"></div>
       </div>
       <div class="card">
         <div class="cardLabel">HOS — Drive Time Left</div>
@@ -56,6 +55,11 @@
         <label for="fuelPriceInput">Fuel price ($/gal)</label>
         <input type="number" id="fuelPriceInput" value="3.75" step="0.01">
       </div>
+      <div class="calcRow">
+        <label for="fuelOverrideInput">Fuel used (gal)</label>
+        <input type="number" id="fuelOverrideInput" placeholder="manual gal" step="0.1">
+      </div>
+      <div class="fuelAutoHint">Auto-detected: <span id="fuelValue">--</span> gal</div>
       <div class="calcResults">
         <div class="calcResultRow">
           <span>Estimated gross pay</span>
