@@ -165,11 +165,13 @@ geotab.addin.driverDashboard = function () {
         return;
       }
       const driverId = changes[0].driver.id;
+      console.log('[FuelWolf] DriverChange found — full driver object:', changes[0].driver, '| driverId:', driverId);
 
       api.call('Get', {
         typeName: 'DutyStatusAvailability',
         search: { userSearch: { id: driverId } }
       }, function (avail) {
+        console.log('[FuelWolf] DutyStatusAvailability result:', avail);
         if (!avail.length) {
           el.hosDrive().textContent = 'n/a';
           el.hosDuty().textContent = 'n/a';
@@ -179,7 +181,7 @@ geotab.addin.driverDashboard = function () {
         el.hosDrive().textContent = formatDuration(a.driveRemaining);
         el.hosDuty().textContent = formatDuration(a.dutyRemaining);
       }, function (err) {
-        console.error('Get DutyStatusAvailability failed', err);
+        console.error('Get DutyStatusAvailability failed — full error:', JSON.stringify(err));
         el.hosDrive().textContent = 'err';
         el.hosDuty().textContent = 'err';
       });
