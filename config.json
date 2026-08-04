@@ -1,0 +1,16 @@
+{
+  "name": "Fleet Wolf Driver Dashboard",
+  "supportEmail": "support@fleetwolf.com",
+  "version": "1.0.0",
+  "items": [
+    {
+      "url": "https://YOUR-GITHUB-USERNAME.github.io/driver-dashboard-addin/index.html",
+      "path": "ActivityLink/",
+      "menuName": {
+        "en": "Driver Dashboard"
+      },
+      "icon": "https://YOUR-GITHUB-USERNAME.github.io/driver-dashboard-addin/icon.svg"
+    }
+  ],
+  "isSigned": false
+}

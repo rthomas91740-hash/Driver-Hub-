@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Fleet Wolf Driver Dashboard</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <div id="dashboard">
+
+    <header>
+      <h1>Driver Dashboard</h1>
+      <div id="deviceSelectWrap">
+        <select id="deviceSelect"><option value="">Loading vehicles…</option></select>
+      </div>
+      <div id="rangeToggle">
+        <button class="rangeBtn active" data-range="day">Day</button>
+        <button class="rangeBtn" data-range="week">Week</button>
+      </div>
+    </header>
+
+    <section id="statCards">
+      <div class="card">
+        <div class="cardLabel">Stops</div>
+        <div class="cardValue" id="stopsValue">--</div>
+      </div>
+      <div class="card">
+        <div class="cardLabel">Mileage</div>
+        <div class="cardValue" id="mileageValue">--</div>
+        <div class="cardUnit">miles</div>
+      </div>
+      <div class="card">
+        <div class="cardLabel">Fuel Used</div>
+        <div class="cardValue" id="fuelValue">--</div>
+        <div class="cardUnit">gallons</div>
+      </div>
+      <div class="card">
+        <div class="cardLabel">HOS — Drive Time Left</div>
+        <div class="cardValue" id="hosDriveValue">--</div>
+      </div>
+      <div class="card">
+        <div class="cardLabel">HOS — On-Duty Left</div>
+        <div class="cardValue" id="hosDutyValue">--</div>
+      </div>
+    </section>
+
+    <section id="cashCalc">
+      <h2>Cash Calculator</h2>
+      <div class="calcRow">
+        <label for="rateInput">Rate per mile ($)</label>
+        <input type="number" id="rateInput" value="0.55" step="0.01">
+      </div>
+      <div class="calcRow">
+        <label for="fuelPriceInput">Fuel price ($/gal)</label>
+        <input type="number" id="fuelPriceInput" value="3.75" step="0.01">
+      </div>
+      <div class="calcResults">
+        <div class="calcResultRow">
+          <span>Estimated gross pay</span>
+          <span id="grossPayValue">$0.00</span>
+        </div>
+        <div class="calcResultRow">
+          <span>Estimated fuel cost</span>
+          <span id="fuelCostValue">$0.00</span>
+        </div>
+        <div class="calcResultRow total">
+          <span>Estimated net</span>
+          <span id="netValue">$0.00</span>
+        </div>
+      </div>
+      <p class="calcNote">Estimate only — based on GPS mileage and reported fuel usage, not actual load pay.</p>
+    </section>
+
+  </div>
+
+<script src="app.js"></script>
+</body>
+</html>
